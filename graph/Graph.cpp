@@ -253,7 +253,7 @@ Graph::buildPCSR(PCSR* pcsr, vector<unsigned>& keys, int label, bool incoming)
     for(int i = 0; i < key_num; ++i)
     {
         unsigned id = keys[i];
-        unsigned pos = hash(&id, 4, HASHSEED) % key_num;
+        unsigned pos = GSI_hash(&id, 4, HASHSEED) % key_num;
         buckets[pos].push_back(id);
     }
     queue<unsigned> empty_buckets;

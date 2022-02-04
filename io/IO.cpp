@@ -93,7 +93,7 @@ IO::input(FILE* fp)
 		else 
 		{
 			cerr<<"ERROR in input() -- invalid char"<<endl;
-			return false;
+			return NULL;
 		}
 	}
 	return NULL;

@@ -38,7 +38,11 @@ Graph::preprocessing(bool column_oriented)
     cout<<"maximum degree: "<<deg<<endl;
 
     long t1 = Util::get_cur_time();
+	
+    cout<<"Transform to CSR"<<endl;
     this->transformToCSR();
+	
+    cout<<"Signature Construction"<<endl;
     this->buildSignature(column_oriented);
     long t2 = Util::get_cur_time();
     printf("time of preprocessing(not included in matching): %ld ms\n", t2-t1);

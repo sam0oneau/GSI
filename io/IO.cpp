@@ -96,6 +96,7 @@ IO::input(FILE* fp)
 			return NULL;
 		}
 	}
+	cerr<<"Unknown Error"<<endl;
 	return NULL;
 }
 

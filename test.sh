@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "data\data\$1"
 ./GSI.exe "data\data\$1" "data\query\_2_road2.g" 
 ./GSI.exe "data\data\$1" "data\query\_3_road3.g" 
 ./GSI.exe "data\data\$1" "data\query\_3_triangle.g"

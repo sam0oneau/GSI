@@ -1353,8 +1353,7 @@ Match::join(unsigned* d_summary, int* link_pos, int* link_edge, int link_num, un
         {
             join_kernel<<<GRID_SIZE, BLOCK_SIZE>>>(d_result_tmp, d_result_tmp_num);
         }
-        cudaDeviceSynchronize();
-        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaDeviceSynchronize());
         cout<<"iteration kernel finished"<<endl;
         cudaFree(d_row_offset);
         cudaFree(d_column_index);

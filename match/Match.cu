@@ -201,8 +201,9 @@ Match::copyHtoD(unsigned*& d_ptr, unsigned* h_ptr, unsigned bytes)
 {
     unsigned* p = NULL;
     cudaMalloc(&p, bytes);
-    checkCudaErrors(cudaMemcpy(p, h_ptr, bytes, cudaMemcpyHostToDevice));
+    cudaMemcpy(p, h_ptr, bytes, cudaMemcpyHostToDevice);
     d_ptr = p;
+    checkCudaErrors(cudaGetLastError());
 }
 
 void Match::exclusive_sum(unsigned* d_array, unsigned size)
@@ -509,13 +510,16 @@ Match::filter(float* _score, int* _qnum)
         //store the signature of query graph there
         cudaMemcpyToSymbol(c_signature, this->query->signature_table+SIGNUM*i, SIGBYTE);
         filter_kernel<<<GRID_SIZE, BLOCK_SIZE>>>(d_signature_table, d_status, dsize);
-        checkCudaErrors(cudaDeviceSynchronize());
+	checkCudaErrors(cudaGetLastError());
+        cudaDeviceSynchronize();
+	checkCudaErrors(cudaGetLastError());
     //NOTICE: the speed of CUB is much better than Thrust: single-pass, shared mem, multiple schemes(device,block,warp-wide)
     //while Thrust has problems: register spills, little usage of shared mem, low occupancy, low scalability
     /*long t1 = Util::get_cur_time();*/
         /*thrust::device_ptr<unsigned> dev_ptr(d_status);*/
         /*thrust::exclusive_scan(dev_ptr, dev_ptr+dsize+1, dev_ptr);*/
     exclusive_sum(d_status, dsize+1);
+	checkCudaErrors(cudaGetLastError());
     /*long t2 = Util::get_cur_time();*/
     /*cout<<"prefix sum scan used: "<<t2-t1<<" ms"<<endl;*/
 
@@ -527,7 +531,9 @@ Match::filter(float* _score, int* _qnum)
         unsigned* d_cand = NULL;
         cudaMalloc(&d_cand, sizeof(unsigned)*_qnum[i]);
         scatter_kernel<<<GRID_SIZE, BLOCK_SIZE>>>(d_status, d_cand, dsize);
-        checkCudaErrors(cudaDeviceSynchronize());
+	checkCudaErrors(cudaGetLastError());
+        cudaDeviceSynchronize();
+	checkCudaErrors(cudaGetLastError());
         this->candidates[i] = d_cand;
     }
     cudaFree(d_status);
@@ -1352,7 +1358,8 @@ Match::join(unsigned* d_summary, int* link_pos, int* link_edge, int link_num, un
         {
             join_kernel<<<GRID_SIZE, BLOCK_SIZE>>>(d_result_tmp, d_result_tmp_num);
         }
-        checkCudaErrors(cudaDeviceSynchronize());
+        cudaDeviceSynchronize();
+        checkCudaErrors(cudaGetLastError());
         cout<<"iteration kernel finished"<<endl;
         cudaFree(d_row_offset);
         cudaFree(d_column_index);

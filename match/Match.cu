@@ -200,10 +200,9 @@ void
 Match::copyHtoD(unsigned*& d_ptr, unsigned* h_ptr, unsigned bytes)
 {
     unsigned* p = NULL;
-    cudaMalloc(&p, bytes);
-    cudaMemcpy(p, h_ptr, bytes, cudaMemcpyHostToDevice);
+    checkCudaErrors(cudaMalloc(&p, bytes));
+    checkCudaErrors(cudaMemcpy(p, h_ptr, bytes, cudaMemcpyHostToDevice));
     d_ptr = p;
-    checkCudaErrors(cudaGetLastError());
 }
 
 void Match::exclusive_sum(unsigned* d_array, unsigned size)

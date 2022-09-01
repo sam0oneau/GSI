@@ -200,9 +200,10 @@ void
 Match::copyHtoD(unsigned*& d_ptr, unsigned* h_ptr, unsigned bytes)
 {
     unsigned* p = NULL;
-    checkCudaErrors(cudaMalloc(&p, bytes));
-    checkCudaErrors(cudaMemcpy(p, h_ptr, bytes, cudaMemcpyHostToDevice));
+    cudaMalloc(&p, bytes);
+    cudaMemcpy(p, h_ptr, bytes, cudaMemcpyHostToDevice);
     d_ptr = p;
+    checkCudaErrors(cudaGetLastError());
 }
 
 void Match::exclusive_sum(unsigned* d_array, unsigned size)
@@ -1357,7 +1358,8 @@ Match::join(unsigned* d_summary, int* link_pos, int* link_edge, int link_num, un
         {
             join_kernel<<<GRID_SIZE, BLOCK_SIZE>>>(d_result_tmp, d_result_tmp_num);
         }
-        checkCudaErrors(cudaDeviceSynchronize());
+        cudaDeviceSynchronize();
+        checkCudaErrors(cudaGetLastError());
         cout<<"iteration kernel finished"<<endl;
         cudaFree(d_row_offset);
         cudaFree(d_column_index);
